@@ -12,16 +12,16 @@ Once [Dedalus](http://dedalus-project.org/) is installed and activated, do
 the following:
 ```
 #!bash
-python3 KH_incompressible.py
-python3 plot_results_parallel.py KH_incompressible slices 1 1 10
+python3 RT_incompressible.py
+python3 plot_results_parallel.py RT_incompressible slices 1 1 10
 ```
 To run in parallel, do something like
 ```
 #!bash
-mpirun -np 4 python3 KH_incompressible.py
-mpirun -np 2 python3 plot_results_parallel.py KH_incompressible slices 1 1 10
+mpirun -np 4 python3 RT_incompressible.py
+mpirun -np 2 python3 plot_results_parallel.py RT_incompressible slices 1 1 10
 ```
 
-See the included KH_handout.pdf for further details.
+See the included RT_handout.pdf for further details.
 
 

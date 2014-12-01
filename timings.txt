@@ -1,0 +1,4 @@
+# Timing Data for the RT Problem
+#
+# Nx	Nz	Ncores		Time
+

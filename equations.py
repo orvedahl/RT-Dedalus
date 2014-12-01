@@ -4,7 +4,7 @@ from dedalus2.public import *
 import logging
 logger = logging.getLogger(__name__.split('.')[-1])
 
-class Incompressible_KH:
+class Incompressible_RT:
     def __init__(self, domain):
         self.domain = domain
         
@@ -30,13 +30,17 @@ class Incompressible_KH:
 
         if not(periodic):
             logger.info("Imposing fixed boundaries, for a single shear layer")
-            self.problem.add_left_bc( "T = 1")
-            self.problem.add_right_bc("T = 0")
-            self.problem.add_left_bc( "u = 0.5")
-            self.problem.add_right_bc("u = -0.5")
-            self.problem.add_left_bc( "w = 0", condition="dx != 0")
-            self.problem.add_left_bc( "P = 0", condition="dx == 0")
-            self.problem.add_right_bc("w = 0")
+            self.problem.add_left_bc( "T = 0") # unstable: T heavier on top
+            self.problem.add_right_bc("T = 1")
+            #self.problem.add_left_bc( "T = 1") # stable: T heavier on bottom
+            #self.problem.add_right_bc("T = 0")
+            #self.problem.add_left_bc( "u = 0.5")  # shear BC
+            #self.problem.add_right_bc("u = -0.5")
+            self.problem.add_left_bc( "u = 0")     # \vec{u} = 0 BC
+            self.problem.add_right_bc("u = 0")
+            self.problem.add_left_bc( "w = 0", condition="dx != 0") # for dx=0, w=const, so need to
+            self.problem.add_left_bc( "P = 0", condition="dx == 0") # "manually" account for this
+            self.problem.add_right_bc("w = 0")                      # by only setting w=0 for dx!=0
         else:
             logger.info("Imposing periodic boundaries")
             logger.info(" -- Applying internal BC to P for k=0")
@@ -46,7 +50,7 @@ class Incompressible_KH:
 
         return self.problem
     
-class Boussinesq_KH:
+class Boussinesq_RT:
     def __init__(self, domain):
         self.domain = domain
         

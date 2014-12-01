@@ -37,7 +37,7 @@
 \chead{}
 \rhead{22 Nov 2014}
 %\rhead{SOLUTIONS}
-\lfoot{Dedalus: KH}
+\lfoot{Dedalus: RT}
 \cfoot{\thepage}
 \rfoot{Fall 2014}
 % no hline under header
@@ -77,13 +77,13 @@ $ hg clone https://bitbucket.org/bpbrown/kelvin_helmholtz
        Run the basic problem by executing:
 \small{
 \begin{verbatim}
-python3 KH_incompressible.py
+python3 RT_incompressible.py
 \end{verbatim}
 }
 and plot the results with
 \small{
 \begin{verbatim}
-python3 plot_results_parallel.py KH_incompressible slices 1 1 10
+python3 plot_results_parallel.py RT_incompressible slices 1 1 10
 \end{verbatim}
 }
 
@@ -120,12 +120,12 @@ python3 plot_results_parallel.py KH_incompressible slices 1 1 10
 
 
          \item The initial conditions, parameters, and simulation
-           resolution are all set in \verb+KH_incompressible.py+.  This is also where
+           resolution are all set in \verb+RT_incompressible.py+.  This is also where
            the output and analysis is done, though the actual image
            generation is done in \verb+plot_results_parallel.py+.  The
-           \verb+KH.py+ file includes a somewhat similar case, but
+           \verb+RT.py+ file includes a somewhat similar case, but
            with a different non-dimensionalization, while
-           \verb+KH_periodic.py+ applies doubly-periodic boundary conditions.
+           \verb+RT_periodic.py+ applies doubly-periodic boundary conditions.
            Best of luck!
 
 \end{enumerate}

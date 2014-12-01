@@ -36,8 +36,8 @@ if domain.distributor.rank == 0:
   if not os.path.exists('{:s}/'.format(data_dir)):
     os.mkdir('{:s}/'.format(data_dir))
 
-KH = equations.Boussinesq_KH(domain)
-pde = KH.set_problem(Rayleigh_thermal, Prandtl, periodic=True)
+RT = equations.Boussinesq_RT(domain)
+pde = RT.set_problem(Rayleigh_thermal, Prandtl, periodic=True)
 
 ts = timesteppers.RK443
 cfl_safety_factor = 0.2*4

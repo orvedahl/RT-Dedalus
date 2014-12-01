@@ -19,14 +19,14 @@ logger.info("Starting Dedalus script {:s}".format(sys.argv[0]))
 # save data in directory named after script
 data_dir = sys.argv[0].split('.py')[0]+'/'
 
-Reynolds = 2500
+Rayleigh_thermal = -14000.0
 Prandtl = 1
 # Set domain
-Lz = 2
-Lx = 1
+Lz = 1
+Lx = 3
 
-nz = np.int(256*3/2)
-nx = np.int(128*3/2)
+nx = np.int(64*3/2)
+nz = np.int(32*3/2)
 
 x_basis = Fourier(nx,   interval=[0., Lx], dealias=2/3)
 z_basis = Chebyshev(nz, interval=[0., Lz], dealias=2/3)
@@ -36,8 +36,9 @@ if domain.distributor.rank == 0:
   if not os.path.exists('{:s}/'.format(data_dir)):
     os.mkdir('{:s}/'.format(data_dir))
 
-KH = equations.Incompressible_KH(domain)
-pde = KH.set_problem(Reynolds, Prandtl)
+#TS = equations.thermosolutal_doubly_diffusive_convection(domain)
+RT = equations.Boussinesq_RT(domain)
+pde = RT.set_problem(Rayleigh_thermal, Prandtl)
 
 ts = timesteppers.RK443
 cfl_safety_factor = 0.2*4
@@ -56,50 +57,35 @@ T = solver.state['T']
 solver.evaluator.vars['Lx'] = Lx
 solver.evaluator.vars['Lz'] = Lz
 
+A0 = 1e-6
 # initially stable stratification
-stable = False
-if (stable):
-    tanh_width = 0.025
-    tanh_center = 0.5
-    phi = 0.5*(1-np.tanh((z-tanh_center)/tanh_width))
-else:
-    tanh_width = 0.025
-    tanh_center = 0.5*Lz
-    phi = 0.5*(1+np.tanh((z-tanh_center)/tanh_width))
+tanh_width = 0.025
+tanh_center = 0.25
+phi = 0.5*(1-np.tanh((z-tanh_center)/tanh_width)*np.tanh((z-0.5-tanh_center)/tanh_width))
 
-shear = False
+A_u = 2000
 
-A_u = 1
+T['g'] = phi + A0*np.sin(z/Lz)*np.random.randn(*T['g'].shape)
+u['g'] = A_u*phi
+#w['g'] = A_u*1e-2*np.sin(z/Lz)*np.cos(4*np.pi*x/Lx)
+w['g'] = 1e-3*A_u*np.sin(z/Lz)*np.random.randn(*w['g'].shape)
 
-T['g'] = phi
-if (shear):
-    u['g'] = A_u*(phi-0.5)
-else:
-    u['g'] = np.zeros((len(z)))
-Noise_IC = False
-if Noise_IC:
-    w['g'] = A_u*1e-1*np.sin(z/Lz)*np.random.randn(*w['g'].shape)
-else:
-    if (stable):
-        w['g'] = -A_u*1e-1*np.sin(z/Lz)*np.sin(2*np.pi*x/Lx)
-    else:
-        w['g'] = A_u*1e-1*np.cos(2*np.pi*x/Lx)
-    
+logger.info("A0 = {:g}".format(A0))
 logger.info("Au = {:g}".format(A_u))
 logger.info("u = {:g} -- {:g}".format(np.min(u['g']), np.max(u['g'])))
 logger.info("T = {:g} -- {:g}".format(np.min(T['g']), np.max(T['g'])))
 
 # integrate parameters
 
-max_dt = 0.1
+max_dt = 1e-1
 cfl_cadence = 1
 cfl = flow_tools.CFL_conv_2D(solver, max_dt, cfl_cadence=cfl_cadence)
 
-report_cadence = 10
-output_time_cadence = 0.05
-solver.stop_sim_time = 10
+report_cadence = 1
+output_time_cadence = 0.1/A_u
+solver.stop_sim_time = 1e-2
 solver.stop_iteration= np.inf
-solver.stop_wall_time = 1.*3600
+solver.stop_wall_time = 0.25*3600
 
 logger.info("output cadence = {:g}".format(output_time_cadence))
 
