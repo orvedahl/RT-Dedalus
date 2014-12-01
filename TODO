@@ -1,0 +1,29 @@
+
+---------------------------------------
+Rayleigh-Taylor Problem
+---------------------------------------
+	What to explore?
+		high resolution
+		high Re space
+
+	What/How to analyze?
+		are there secondary instabilities?
+		do they disappear with resolution?
+		do they disappear with reynolds # (and high res)?
+
+---------------------------------------
+Kelvin-Helmholtz Problem
+---------------------------------------
+	What to explore?
+		Re space -- from ~1 to ~1e7 (change resolution accordingly)
+		Pr space -- from ~1 to ~1e7 (change resolution accordingly)
+
+	What/How to analyze?
+		some sort of variance??
+		2D FFT??
+		size of swirl
+		tightness of swirl??
+		time to equilibrate: when does it get uniform (variance large)?
+			make lots of movies
+		does swirl always behave in the same way
+

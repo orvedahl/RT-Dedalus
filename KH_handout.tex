@@ -1,0 +1,134 @@
+%
+%     hw9.tex
+%     Benjamin Brown (bpbrown@colorado.edu)
+%     October 29, 2014
+%
+%     Problemset 9 for ASTR/ATOC 5540, Mathematical Methods, taught at
+%     University of Colorado, Boulder, Fall 2014.
+%
+
+\documentclass[12pt, preprint]{aastex}
+% formatting based on 2014 NASA ATP proposal with Jeff Oishi
+
+%%%%%%begin preamble
+\usepackage[hmargin=1in, vmargin=1in]{geometry} % Margins
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{times}
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{pdfpages}
+\usepackage{import}
+\usepackage{listings}
+
+\hypersetup{
+     colorlinks   = true,
+     citecolor     = gray,
+     urlcolor       = blue
+}
+
+%% headers
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{ASTR/ATOC 5410}
+\chead{}
+\rhead{22 Nov 2014}
+%\rhead{SOLUTIONS}
+\lfoot{Dedalus: KH}
+\cfoot{\thepage}
+\rfoot{Fall 2014}
+% no hline under header
+\renewcommand{\headrulewidth}{0pt}
+
+\newcommand{\sol}{\ensuremath{\odot}}
+\newcommand{\dedalus}{\href{http://dedalus-project.org}{Dedalus}}
+\renewcommand{\vec}{\boldsymbol}
+\newcommand{\del}{\vec{\nabla}}
+% make lists compact
+\usepackage{enumitem}
+%\setlist{nosep}
+
+%%%%%%end preamble
+
+\begin{document}
+
+\section*{Dedalus}
+\begin{description}
+     \item[Kelvin-Helmholtz with Dedalus (a 2-D PDE)]~\\ 
+    Now that you have some experience with PDEs and \dedalus, let's
+    take a look at the classic Kelvin-Helmholtz instability.  This one
+    can be solved on your laptops.
+    \begin{enumerate}
+      \item Use Mercurial and clone the Kelvin-Helmholtz repository located at
+       \url{https://bitbucket.org/bpbrown/kelvin_helmholtz}
+       If you have Mercurial on your system, this can be done with
+{\footnotesize
+\begin{verbatim}
+$ hg clone https://bitbucket.org/bpbrown/kelvin_helmholtz
+\end{verbatim}
+}
+       The Kelvin-Helmholtz problem will be downloaded and
+       stored in a subdirectory named \verb+kelvin_helmholtz+.
+       If the \verb+hg+ command isn't recognized, please install Mercurial (\url{http://mercurial.selenic.com}).
+       
+       Run the basic problem by executing:
+\small{
+\begin{verbatim}
+python3 KH_incompressible.py
+\end{verbatim}
+}
+and plot the results with
+\small{
+\begin{verbatim}
+python3 plot_results_parallel.py KH_incompressible slices 1 1 10
+\end{verbatim}
+}
+
+       \item The equations for this Kelvin-Helmholtz problem are:
+         \begin{eqnarray}
+           \frac{\partial \vec{u}}{\partial t} +
+             +\del P - \frac{1}{Re}\del^2 \vec{u} &=& -\vec{u}\cdot\del\vec{u}
+           \\
+           \frac{\partial T}{\partial t} - \frac{1}{Pe}\del^2 T&=&
+           -\vec{u}\cdot\del T \\
+           \vec{\del}\cdot\vec{u} &=& 0 
+         \end{eqnarray}
+         with vector velocity $\vec{u} = u\vec{\hat{x}} + w
+         \vec{\hat{z}}$ and passive scalar tracer (here temperature)
+         $T$.  Here we have non-dimensionalized the equations based on
+         the large-scale flow crossing time $\tau = L/U_0$, where $L$
+         is the domain size and $U_0$ is the jump in amplitude of the
+         horizontal shear flow across the tanh profile.
+         %
+         The control
+         parameters are the thermal Reynolds number $Re$ and the
+         Prandtl number $Pr$, with the Peclet number $Pe=Re Pr$.  
+         The initial horizontal flow and temperature field are given by a tanh.
+         Open \verb+equations.py+ to find the equations
+         as implemented. Note that here the boundary conditions are
+         set up to continue enforcing the shear flow, and are set to
+         be consistent with our initial $u$ and $T$.
+
+         \item The provided case runs at $Re=2500$ and $Pr=1$.  If you
+           increase $Re$, you may also need to increase the $nx$ and
+           $nz$ resolution.  We suggest you take our approach, and
+           specify the resolution in modes, then pad by a factor of
+           $3/2$ for dealiasing.
+
+
+         \item The initial conditions, parameters, and simulation
+           resolution are all set in \verb+KH_incompressible.py+.  This is also where
+           the output and analysis is done, though the actual image
+           generation is done in \verb+plot_results_parallel.py+.  The
+           \verb+KH.py+ file includes a somewhat similar case, but
+           with a different non-dimensionalization, while
+           \verb+KH_periodic.py+ applies doubly-periodic boundary conditions.
+           Best of luck!
+
+\end{enumerate}
+\end{description}
+
+\end{document}

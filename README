@@ -1,0 +1,27 @@
+RT-Dedalus
+==========
+
+Rayleigh Talor Instability for the Dedalus pseudo-spectral code
+
+These are basic Kelvin-Helmholtz problems, executed with the
+[Dedalus](http://dedalus-project.org) pseudospectral framework.
+To run these problems, first install [Dedalus](http://dedalus-project.org/)
+(and on [bitbucket](https://bitbucket.org/dedalus-project/dedalus2)).
+
+Once [Dedalus](http://dedalus-project.org/) is installed and activated, do 
+the following:
+```
+#!bash
+python3 KH_incompressible.py
+python3 plot_results_parallel.py KH_incompressible slices 1 1 10
+```
+To run in parallel, do something like
+```
+#!bash
+mpirun -np 4 python3 KH_incompressible.py
+mpirun -np 2 python3 plot_results_parallel.py KH_incompressible slices 1 1 10
+```
+
+See the included KH_handout.pdf for further details.
+
+
