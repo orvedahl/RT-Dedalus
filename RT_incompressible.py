@@ -12,30 +12,38 @@ from dedalus2.tools  import post
 from dedalus2.extras import flow_tools
 #from dedalus2.extras.checkpointing import Checkpoint
 
+# this defines domain, parameters and resolutions
+from problem_parameters import *
+
+#####################################################################
 initial_time = time.time()
 
 logger.info("Starting Dedalus script {:s}".format(sys.argv[0]))
 
-# save data in directory named after script
-data_dir = sys.argv[0].split('.py')[0]+'/'
-
-Reynolds = 2500
-Prandtl = 1
+##Reynolds = 2500
+##Prandtl = 1
 # Set domain
-Lz = 1
-Lx = 1
+##Lz = 1
+##Lx = 1
 
 # simulation stop time
-tstop = 20
-tstop_wall = 10 # max walltime limit in hours
+##tstop = 30
+##tstop_wall = 100 # max walltime limit in hours
 
 # resolution
-nz = np.int(1024*3/2)
-nx = np.int(1024*3/2)
+##nx_tmp = 128
+##nz_tmp = 128
+nx = np.int(nx_tmp*3/2)
+nz = np.int(nz_tmp*3/2)
 
 x_basis = Fourier(nx,   interval=[0., Lx], dealias=2/3)
 z_basis = Chebyshev(nz, interval=[0., Lz], dealias=2/3)
 domain = Domain([x_basis, z_basis], grid_dtype=np.float64)
+
+# save data in directory named after script
+##data_dir_prefix = "/charybdis/toomre/ryor5023/Projects/Rayleigh-Taylor/"
+data_dir = data_dir_prefix + sys.argv[0].split('.py')[0] + \
+           "_" + str(nx_tmp) + "x" + str(nz_tmp) + "/"
 
 if domain.distributor.rank == 0:
   if not os.path.exists('{:s}/'.format(data_dir)):

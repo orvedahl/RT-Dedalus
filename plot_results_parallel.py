@@ -388,7 +388,7 @@ for j, (fname, field) in enumerate(zip(fnames, fields)):
 first_iteration = iteration        
 # plot images        
 print(x.shape)  
-dpi_png = max(96, len(x)/(w_total*scale))
+dpi_png = 125 #max(96, len(x)/(w_total*scale))
 
 
 print("dpi:", dpi_png, " -> ", w_total*scale*dpi_png, "x",h_total*scale*dpi_png)
