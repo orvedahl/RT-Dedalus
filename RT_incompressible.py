@@ -2,6 +2,7 @@ import numpy as np
 import time
 import os
 import sys
+import getopt
 import equations
 
 import logging
@@ -12,27 +13,45 @@ from dedalus2.tools  import post
 from dedalus2.extras import flow_tools
 #from dedalus2.extras.checkpointing import Checkpoint
 
-# this defines domain, parameters and resolutions
-from problem_parameters import *
-
 #####################################################################
 initial_time = time.time()
 
 logger.info("Starting Dedalus script {:s}".format(sys.argv[0]))
 
-##Reynolds = 2500
-##Prandtl = 1
-# Set domain
-##Lz = 1
-##Lx = 1
+# parse command line arguments
+Reynolds = 2500  # problem parameters
+Prandtl = 1
+Lx = 1           # set domain
+Lz = 2
+tstop = 30       # simulation stop time
+tstop_wall = 100 # max walltime limit in hours
+nx_tmp = 128   # resolution
+nz_tmp = 128
 
-# simulation stop time
-##tstop = 30
-##tstop_wall = 100 # max walltime limit in hours
+# parse command args
+try:
+    opts, args = getopt.getopt(sys.argv[1:], "", ["Re=", "Pr=", "Lx=", "Lz="
+                               "tstop=", "twall-stop=", "nx=", "nz="])
+except getopt.GetoptError:
+    print ("\n\n\tBad Command Line Args -- Using Defaults\n\n")
+for opt, arg in opts:
+    if opt in ("--Re"):
+        Reynolds = float(arg)
+    elif opt in ("--Pr"):
+        Prandtl = float(arg)
+    elif opt in ("--Lx"):
+        Lx = float(arg)
+    elif opt in ("--Lz"):
+        Lz = float(arg)
+    elif opt in ("--tstop"):
+        tstop = float(arg)
+    elif opt in ("--twall-stop"):
+        tstop_wall = float(arg)
+    elif opt in ("--nx"):
+        nx_tmp = int(arg)
+    elif opt in ("--nz"):
+        nz_tmp = int(arg)
 
-# resolution
-##nx_tmp = 128
-##nz_tmp = 128
 nx = np.int(nx_tmp*3/2)
 nz = np.int(nz_tmp*3/2)
 
@@ -41,9 +60,10 @@ z_basis = Chebyshev(nz, interval=[0., Lz], dealias=2/3)
 domain = Domain([x_basis, z_basis], grid_dtype=np.float64)
 
 # save data in directory named after script
-##data_dir_prefix = "/charybdis/toomre/ryor5023/Projects/Rayleigh-Taylor/"
-data_dir = data_dir_prefix + sys.argv[0].split('.py')[0] + \
-           "_" + str(nx_tmp) + "x" + str(nz_tmp) + "/"
+script_name = sys.argv[0].split('.py')[0] # this is path of python executable
+script_name = script_name.split("/")[-1]  # this removes any "/" in filename
+data_dir_prefix = "/charybdis/toomre/ryor5023/Projects/Rayleigh-Taylor/"
+data_dir = data_dir_prefix+script_name+"_"+str(nx_tmp)+"x"+str(nz_tmp)+"/"
 
 if domain.distributor.rank == 0:
   if not os.path.exists('{:s}/'.format(data_dir)):
