@@ -3,8 +3,8 @@
 #
 
 # resolution
-nx_tmp = 128
-nz_tmp = 128
+nx_tmp = 1024
+nz_tmp = 1024
 
 # parameters
 Reynolds = 2500
@@ -12,11 +12,13 @@ Prandtl = 1
 
 # domain
 Lx = 1
-Lz = 1
+Lz = 2
 
 # timestepping
-tstop = 30
+tstop = 50
 tstop_wall = 100 # max walltime in hours
 
 # output data directory
 data_dir_prefix = "/charybdis/toomre/ryor5023/Projects/Rayleigh-Taylor/"
+#data_dir_prefix = "/lustre/janus_scratch/ryor5023/Runs/Dedalus/Rayleigh-Taylor/"
+

@@ -96,7 +96,7 @@ else:
     if (stable):
         w['g'] = -A_u*1e-1*np.sin(z/Lz)*np.sin(2*np.pi*x/Lx)
     else:
-        w['g'] = A_u*1e-1*np.cos(2*np.pi*x/Lx)
+        w['g'] = A_u*1e-1*np.sin(2*np.pi*x/Lx)
     
 logger.info("Au = {:g}".format(A_u))
 logger.info("u = {:g} -- {:g}".format(np.min(u['g']), np.max(u['g'])))

@@ -85,6 +85,7 @@ print()
 #plt.ion()
 # Options
 fnames = ["T","enstrophy"]
+#fnames = ["T"] #["T","enstrophy"]
 xstr = 'x/H'
 ystr = 'z/H'
 cmapname = 'Spectral_r'
@@ -104,7 +105,7 @@ static_scale = True
 sliding_average = False
 box_size = 30
 true_aspect_ratio = True
-vertical_stack = True
+vertical_stack = False
 scale_late = True
 add_background_s0 = False
 
@@ -191,8 +192,11 @@ else:
 
 # Setup spacing [top, bottom, left, right] and [height, width]
 t_mar, b_mar, l_mar, r_mar = (0.2, 0.2, 0.2, 0.2)
-t_pad, b_pad, l_pad, r_pad = (0.15, 0.03, 0.03, 0.03)
-h_cbar, w_cbar = (0.05, 1.)
+t_pad, b_pad, l_pad, r_pad = (0.15, 0.03, 0.03, 0.05)
+if vertical_stack:
+  h_cbar, w_cbar = (0.05, 1.)
+else:
+  h_cbar, w_cbar = (0.05, 0.5)
 
 domain_width = np.max(x)-np.min(x)
 domain_height = np.max(y)-np.min(y)
@@ -388,7 +392,7 @@ for j, (fname, field) in enumerate(zip(fnames, fields)):
 first_iteration = iteration        
 # plot images        
 print(x.shape)  
-dpi_png = 125 #max(96, len(x)/(w_total*scale))
+dpi_png = max(96, len(x)/(w_total*scale))
 
 
 print("dpi:", dpi_png, " -> ", w_total*scale*dpi_png, "x",h_total*scale*dpi_png)
