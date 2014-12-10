@@ -25,13 +25,14 @@ Lx = 1           # set domain
 Lz = 2
 tstop = 30       # simulation stop time
 tstop_wall = 100 # max walltime limit in hours
-nx_tmp = 128   # resolution
+nx_tmp = 128     # resolution
 nz_tmp = 128
+dir_str = ""     # extra string on directory name
 
 # parse command args
 try:
     opts, args = getopt.getopt(sys.argv[1:], "", ["Re=", "Pr=", "Lx=", "Lz="
-                               "tstop=", "twall-stop=", "nx=", "nz="])
+                           "tstop=", "twall-stop=", "nx=", "nz=", "dir-str="])
 except getopt.GetoptError:
     print ("\n\n\tBad Command Line Args -- Using Defaults\n\n")
 for opt, arg in opts:
@@ -51,6 +52,12 @@ for opt, arg in opts:
         nx_tmp = int(arg)
     elif opt in ("--nz"):
         nz_tmp = int(arg)
+    elif opt in ("--dir-str"):
+        dir_str = arg
+
+# if dir_str is empty, set it to the Reynolds number
+if (dir_str == ""):
+    dir_str = str(Reynolds)
 
 nx = np.int(nx_tmp*3/2)
 nz = np.int(nz_tmp*3/2)
@@ -63,7 +70,10 @@ domain = Domain([x_basis, z_basis], grid_dtype=np.float64)
 script_name = sys.argv[0].split('.py')[0] # this is path of python executable
 script_name = script_name.split("/")[-1]  # this removes any "/" in filename
 data_dir_prefix = "/charybdis/toomre/ryor5023/Projects/Rayleigh-Taylor/"
-data_dir = data_dir_prefix+script_name+"_"+str(nx_tmp)+"x"+str(nz_tmp)+"/"
+if (dir_str[0] != "_"):
+    dir_str = "_" + dir_str
+data_dir = data_dir_prefix + script_name + "_" + str(nx_tmp) + "x" + \
+           str(nz_tmp) + dir_str + "/"
 
 if domain.distributor.rank == 0:
   if not os.path.exists('{:s}/'.format(data_dir)):
@@ -72,8 +82,10 @@ if domain.distributor.rank == 0:
 RT = equations.Incompressible_RT(domain)
 pde = RT.set_problem(Reynolds, Prandtl)
 
+logger.info("Nx = {:g}, Nz = {:g}".format(nx, nz))
+
 ts = timesteppers.RK443
-cfl_safety_factor = 0.2*4
+cfl_safety_factor = 0.1*4
 
 # Build solver
 solver = solvers.IVP(pde, domain, ts)
@@ -116,7 +128,7 @@ else:
     if (stable):
         w['g'] = -A_u*1e-1*np.sin(z/Lz)*np.sin(2*np.pi*x/Lx)
     else:
-        w['g'] = A_u*1e-1*np.sin(2*np.pi*x/Lx)
+        w['g'] = 0.25*A_u*np.cos(2*np.pi*x/Lx)
     
 logger.info("Au = {:g}".format(A_u))
 logger.info("u = {:g} -- {:g}".format(np.min(u['g']), np.max(u['g'])))
