@@ -10,6 +10,7 @@ import sys
 import brewer2mpl
 import h5py
 from mpi4py import MPI
+from dedalus2.tools import post
 
 comm_world = MPI.COMM_WORLD
 rank = comm_world.rank
@@ -68,12 +69,23 @@ if size>n_iter:
 if n_iter % size != 0:
     raise NameError("Number of processors must divide n_iter")
 
+# do we merge/join the files
+merge = False
+if len(sys.argv) > 6:
+    merge = True
+
 n_iter = int(n_iter/size)
 iteration = iteration + int(n_iter*rank*iter_step)
 
 name = 'snapshot'
 startup_report_string += " and writing to {:s}".format(name)
 startup_report_string += ", starting at iter {:d}".format(iteration) 
+
+if (merge):
+    print()
+    print("Starting Join Operation")
+    print(data_dir + "/" + data_prefix)
+    post.merge_analysis(data_dir + "/" + data_prefix)
  
 print()
 print(startup_report_string)
@@ -392,7 +404,8 @@ for j, (fname, field) in enumerate(zip(fnames, fields)):
 first_iteration = iteration        
 # plot images        
 print(x.shape)  
-dpi_png = max(96, len(x)/(w_total*scale))
+dpi_png = max(96, len(x)/(w_total*scale)) # make dpi a minimum of 96
+dpi_png = min(175, dpi_png)               # make dpi a maximum of 175
 
 
 print("dpi:", dpi_png, " -> ", w_total*scale*dpi_png, "x",h_total*scale*dpi_png)
